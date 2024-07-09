@@ -1,0 +1,206 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  email         String      @unique
+  password      String
+
+
+  commodities   Commodity[] @relation(fields: [commodityIds], references: [id])
+  commodityIds  String[]    @db.ObjectId
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+
+model Market {
+  id                String      @id @default(auto()) @map("_id") @db.ObjectId
+  name              String      @unique
+  icon              String
+  bigLogo           String?
+  bigLogoBgColor    String?
+  bigLogoFontColor  String?
+  bigPic            String?
+  bigVideo          String?
+  rating            String?
+  ratingAmount      String?
+  description       String?
+  website           String?
+  email             String?
+  telephone         String?
+  facebook          String?
+  twitter           String?
+  ins               String?
+  youtube           String?
+  address           String?
+  privacyPolicy     String?
+  refundPolicy      String?
+  shippingPolicy    String?
+  commodities       Commodity[]
+  marketTag         MarketTag?
+  comments          Comment[]
+
+  searchTag         Float[]
+
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+}
+
+
+model Commodity {
+  id                String      @id @default(auto()) @map("_id") @db.ObjectId
+  name              String
+  price             Float
+  promotingPrice    Float?
+  images            String[]
+  rating            Float?
+  ratingAmount      String?
+  description       String?
+  stock             Float?
+  selling           Float?
+  officialLink      String?
+  tags              String[]
+
+  market            Market?      @relation(fields: [marketId], references: [id])
+  marketId          String?      @db.ObjectId
+
+  userIds           String[]    @db.ObjectId
+  users             User[]      @relation(fields: [userIds], references: [id])
+
+  skuConfigs        SkuConfig[]
+  skuItems          SkuItem[]
+  comments          Comment[]
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@unique([name, marketId])
+}
+
+
+model SkuConfig {
+  id                String      @id @default(auto()) @map("_id") @db.ObjectId
+  key               String
+  value             String[]
+  defaultValue      String
+
+  commodity         Commodity?  @relation(fields: [commodityId], references: [id])
+  commodityId       String?     @db.ObjectId
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@unique([key, commodityId])
+}
+
+
+model SkuItem {
+  id                String      @id @default(auto()) @map("_id") @db.ObjectId
+  sku               Json
+  price             Float
+  promotingPrice    Float
+  image             String?
+  stock             Float
+
+  commodity         Commodity?  @relation(fields: [commodityId], references: [id])
+  commodityId       String?     @db.ObjectId
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+
+  @@unique([sku, commodityId])
+}
+
+
+model HomeBanner{
+  id                String      @id @default(auto()) @map("_id") @db.ObjectId
+  image             String?     @unique
+  logo              String?
+  isCommodity       Boolean
+  row               Row         @default(ROW0)
+  relativeId        String      @db.ObjectId @unique
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+}
+
+enum Row {
+  ROW0
+  ROW1
+  ROW2
+}
+
+model HomeShopStarted {
+  id                String      @id @default(auto()) @map("_id") @db.ObjectId
+  name              String      @unique
+  logo              String
+  imageLeft         String?
+  imageRight        String?
+  rating            String?
+  ratingAmount      String?
+  relativeId        String      @db.ObjectId @unique
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+}
+
+model MarketTag {
+  id                String      @id @default(auto()) @map("_id") @db.ObjectId
+  tags              String[]
+
+  market            Market      @relation(fields: [marketId], references: [id])
+  marketId          String      @db.ObjectId @unique
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+}
+
+model Comment {
+  id                String      @id @default(auto()) @map("_id") @db.ObjectId
+  rating            Float
+  comment           String
+  userName          String
+
+  market            Market      @relation(fields: [marketId], references: [id])
+  marketId          String      @db.ObjectId
+
+  commodity         Commodity   @relation(fields: [commodityId], references: [id])
+  commodityId       String      @db.ObjectId
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+}
+
+model Category {
+  id                String      @id @default(auto()) @map("_id") @db.ObjectId
+  categoryId        Float       @unique
+  name              String      @unique
+
+  children          Category[]  @relation("Category")
+
+  parent            Category?   @relation("Category", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parentId          String?     @db.ObjectId
+
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+}
