@@ -41,8 +41,14 @@ const getSearch = asyncErrorWrapper(async(req, res) => {
 
 
     let some = {};
-    const sizeParam = req.query.size;
-    const colorParam = req.query.color;
+    let sizeParam = req.query.size;
+    if(sizeParam && !Array.isArray(sizeParam)) {
+        sizeParam = [sizeParam];
+    }
+    let colorParam = req.query.color;
+    if(colorParam && !Array.isArray(colorParam)) {
+        colorParam = [colorParam];
+    }
     if(sizeParam && sizeParam.length!==0 && colorParam && colorParam.length !== 0) {
         some = {
             AND: [

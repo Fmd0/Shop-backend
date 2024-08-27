@@ -22,10 +22,10 @@ const getComment = asyncErrorWrapper(async (req, res) => {
     }
 
     const {_count: totalAmount} = await prisma.comment.aggregate({
-        where: {
-            ...commodityId,
-            ...marketId,
-        },
+        // where: {
+        //     ...commodityId,
+        //     ...marketId,
+        // },
         _count: true
     })
     const totalPages = Math.ceil(totalAmount / pageSize)
@@ -40,10 +40,10 @@ const getComment = asyncErrorWrapper(async (req, res) => {
     }
 
     const data = await prisma.comment.findMany({
-        where: {
-            ...commodityId,
-            ...marketId
-        },
+        // where: {
+        //     ...commodityId,
+        //     ...marketId
+        // },
         select: {
             id: true,
             rating: true,

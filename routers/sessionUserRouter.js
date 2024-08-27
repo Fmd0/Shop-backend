@@ -1,17 +1,32 @@
 const router = require('express').Router();
-const { login, logout, register, getUser, addLike, deleteLike, getLike, getLikeId} = require("../controllers/sessionUserController")
-const sessionAuth = require("../middleware/sessionAuth")
+const {
+    login,
+    register,
+    getUser,
+    addLike,
+    deleteLike,
+    getLike,
+    getLikeId,
+    followMarket,
+    notFollowMarket,
+    getFollowMarketId
+} = require("../controllers/sessionUserController")
+const authMiddleware = require("../middleware/auth")
 
 
 router.post('/login', login);
-router.post('/logout', logout);
+// router.post('/logout', logout);
 router.post('/register', register);
-router.get('/', sessionAuth, getUser);
+router.get('/', authMiddleware, getUser);
 
-router.get('/like', sessionAuth, getLike);
-router.post('/like', sessionAuth, addLike);
-router.delete('/like', sessionAuth, deleteLike);
-router.get('/like/id', sessionAuth, getLikeId);
+router.get('/like', authMiddleware, getLike);
+router.post('/like', authMiddleware, addLike);
+router.delete('/like', authMiddleware, deleteLike);
+router.get('/like/id', authMiddleware, getLikeId);
+
+router.post('/follow', authMiddleware, followMarket);
+router.delete('/follow', authMiddleware, notFollowMarket);
+router.get('/follow/id', authMiddleware, getFollowMarketId);
 
 
 
